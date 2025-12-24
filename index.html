@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF Scroll Pages</title>
+<title>PDF Scroll Viewer</title>
 
 <style>
 html, body {
@@ -13,15 +13,15 @@ html, body {
     background: #000;
 }
 
-#viewer {
+iframe {
     width: 100%;
     height: 100%;
     border: none;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.6s ease;
 }
 
-#viewer.show {
+iframe.active {
     opacity: 1;
 }
 </style>
@@ -29,40 +29,45 @@ html, body {
 
 <body>
 
-<iframe
-    id="viewer"
-    src="invitation.pdf#page=1&zoom=fit"
-    class="show">
-</iframe>
+<iframe id="pdfFrame" src="page1.pdf" class="active"></iframe>
 
 <script>
-let page = 1;
-const totalPages = 3;
-const pdfFile = "invitation.pdf";
-const viewer = document.getElementById("viewer");
-let locked = false;
+const pdfs = [
+    "page1.pdf",
+    "page2.pdf",
+    "page3.pdf"
+];
 
-function loadPage(p) {
-    viewer.classList.remove("show");
+let index = 0;
+const frame = document.getElementById("pdfFrame");
+let lock = false;
+
+function showPDF(i) {
+    frame.classList.remove("active");
     setTimeout(() => {
-        viewer.src = `${pdfFile}#page=${p}&zoom=fit`;
-        viewer.classList.add("show");
-    }, 250);
+        frame.src = pdfs[i];
+        frame.classList.add("active");
+    }, 300);
 }
 
-// Mouse wheel (desktop)
+// Mouse wheel
 window.addEventListener("wheel", e => {
-    if (locked) return;
-    locked = true;
+    if (lock) return;
+    lock = true;
 
-    if (e.deltaY > 0 && page < totalPages) page++;
-    if (e.deltaY < 0 && page > 1) page--;
+    if (e.deltaY > 0 && index < pdfs.length - 1) {
+        index++;
+        showPDF(index);
+    }
+    if (e.deltaY < 0 && index > 0) {
+        index--;
+        showPDF(index);
+    }
 
-    loadPage(page);
-    setTimeout(() => locked = false, 800);
+    setTimeout(() => lock = false, 900);
 });
 
-// Touch swipe (mobile)
+// Touch swipe
 let startY = 0;
 
 window.addEventListener("touchstart", e => {
@@ -70,18 +75,15 @@ window.addEventListener("touchstart", e => {
 });
 
 window.addEventListener("touchend", e => {
-    let endY = e.changedTouches[0].clientY;
-    let diff = startY - endY;
-
+    let diff = startY - e.changedTouches[0].clientY;
     if (Math.abs(diff) < 50) return;
 
-    if (diff > 0 && page < totalPages) page++;
-    if (diff < 0 && page > 1) page--;
+    if (diff > 0 && index < pdfs.length - 1) index++;
+    if (diff < 0 && index > 0) index--;
 
-    loadPage(page);
+    showPDF(index);
 });
 </script>
 
 </body>
 </html>
-
