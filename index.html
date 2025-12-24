@@ -8,82 +8,49 @@
 <style>
 html, body {
     margin: 0;
+    padding: 0;
     height: 100%;
-    overflow: hidden;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
     background: #000;
 }
 
+/* Each page */
+.section {
+    height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* PDF iframe */
 iframe {
     width: 100%;
     height: 100%;
     border: none;
-    opacity: 0;
-    transition: opacity 0.6s ease;
 }
 
-iframe.active {
-    opacity: 1;
+/* Small gap between pages */
+.section:not(:last-child) {
+    margin-bottom: 20px;
 }
 </style>
 </head>
 
 <body>
 
-<iframe id="pdfFrame" src="1 new.pdf" class="active"></iframe>
+<div class="section">
+    <iframe src="1 new.pdf"></iframe>
+</div>
 
-<script>
-const pdfs = [
-    "1 new.pdf",
-    "2 with QR code.pdf",
-    "3 with QR code.pdf"
-];
+<div class="section">
+    <iframe src="2 with QR code.pdf"></iframe>
+</div>
 
-let index = 0;
-const frame = document.getElementById("pdfFrame");
-let lock = false;
-
-function showPDF(i) {
-    frame.classList.remove("active");
-    setTimeout(() => {
-        frame.src = pdfs[i];
-        frame.classList.add("active");
-    }, 300);
-}
-
-// Mouse wheel
-window.addEventListener("wheel", e => {
-    if (lock) return;
-    lock = true;
-
-    if (e.deltaY > 0 && index < pdfs.length - 1) {
-        index++;
-        showPDF(index);
-    }
-    if (e.deltaY < 0 && index > 0) {
-        index--;
-        showPDF(index);
-    }
-
-    setTimeout(() => lock = false, 900);
-});
-
-// Touch swipe
-let startY = 0;
-
-window.addEventListener("touchstart", e => {
-    startY = e.touches[0].clientY;
-});
-
-window.addEventListener("touchend", e => {
-    let diff = startY - e.changedTouches[0].clientY;
-    if (Math.abs(diff) < 50) return;
-
-    if (diff > 0 && index < pdfs.length - 1) index++;
-    if (diff < 0 && index > 0) index--;
-
-    showPDF(index);
-});
-</script>
+<div class="section">
+    <iframe src="3 with QR code.pdf"></iframe>
+</div>
 
 </body>
 </html>
