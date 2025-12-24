@@ -1,1 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Scroll Pages</title>
+
+<style>
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+
+#viewer {
+    width: 100%;
+    height: 100%;
+    border: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#viewer.show {
+    opacity: 1;
+}
+</style>
+</head>
+
+<body>
+
+<iframe
+    id="viewer"
+    src="invitation.pdf#page=1&zoom=fit"
+    class="show">
+</iframe>
+
+<script>
+let page = 1;
+const totalPages = 3;
+const pdfFile = "invitation.pdf";
+const viewer = document.getElementById("viewer");
+let locked = false;
+
+function loadPage(p) {
+    viewer.classList.remove("show");
+    setTimeout(() => {
+        viewer.src = `${pdfFile}#page=${p}&zoom=fit`;
+        viewer.classList.add("show");
+    }, 250);
+}
+
+// Mouse wheel (desktop)
+window.addEventListener("wheel", e => {
+    if (locked) return;
+    locked = true;
+
+    if (e.deltaY > 0 && page < totalPages) page++;
+    if (e.deltaY < 0 && page > 1) page--;
+
+    loadPage(page);
+    setTimeout(() => locked = false, 800);
+});
+
+// Touch swipe (mobile)
+let startY = 0;
+
+window.addEventListener("touchstart", e => {
+    startY = e.touches[0].clientY;
+});
+
+window.addEventListener("touchend", e => {
+    let endY = e.changedTouches[0].clientY;
+    let diff = startY - endY;
+
+    if (Math.abs(diff) < 50) return;
+
+    if (diff > 0 && page < totalPages) page++;
+    if (diff < 0 && page > 1) page--;
+
+    loadPage(page);
+});
+</script>
+
+</body>
+</html>
 
