@@ -15,23 +15,32 @@ html, body {
     align-items: center;
 }
 
-a {
-    display: block;
+.container {
+    position: relative;
     width: 100%;
     max-width: 420px;
 }
 
-img {
+.container img {
     width: 100%;
-    height: auto;
     display: block;
+}
+
+/* QR overlay */
+.qr {
+    position: absolute;
+    bottom: 18%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
 }
 </style>
 </head>
 
 <body>
-<a href="invitation.html">
-    <img src="images/landing.png" alt="Tap to open wedding invitation">
+<a href="invitation.html" class="container">
+    <img src="images/landing.png" alt="Wedding Invitation">
+    <img src="images/Landing QR.png" class="qr" alt="Tap to open invitation">
 </a>
 </body>
 </html>
